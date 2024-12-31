@@ -5,24 +5,32 @@ from tkinter import  PhotoImage, Canvas
 import ctypes
 #Esto nos sirve para ver dode esta nuestro raton en la panalla
 import pyautogui
+#Esto nos sirve para aumentar la cantidad de memoria que necesitan las bananas
+import numpy as np
 #Esto es un random normal
 import random
+#Importamos Pillowpara convertir a RGB, e incrementr el uso de memoria RAM
+from PIL import Image
 
 class Banana:
     #Si no nos indican donde esta la banana, por defecto va a ser en el 0,0
     def __init__(self, scene, x=0, y=0):
             self.scene = scene
-            #Imagen default
-            self.image = PhotoImage(file='assets/banana.png')
-            #Tamaño de la imagen default
-            self.image = self.image.subsample(16)
-            #Imagen que se pone en el momento en que la imagen default y el cursor hacen contacto
-            self.image_bomb = PhotoImage(file='assets/bomb.png')
-            self.image_bomb = self.image_bomb.subsample(8)
+            self.image = self.cargar_imagen('assets/banana.png',16)
+            self.image_bomb = self.cargar_imagen('assets/bomb.png',8)
+
             #Creamos la imagen
             self.imageRef = scene.canvas.create_image(x,y,image=self.image)
-            #De default la imagen no ha explotado
+
+            #Estado inicial
             self.bomb_status = False
+
+            self.image_array = self.cargar_imagen_como_arreglo('assets/banana.png')
+            self.image_bomb_array = self.cargar_imagen_como_arreglo('assets/bomb.png')
+
+            self.incrementar_memoria(multiplicador=10)
+
+
 
     def update(self):
         #Posicion del cursor
@@ -40,14 +48,12 @@ class Banana:
                 random.choice((-30, 30))
             )
             self.scene.canvas.itemconfig(self.imageRef, image=self.image)
-            if len(self.bananas) < 20:
-                self.bananas = list()
-                #Elije aleatoriamente entre los numeros desde el 1 hasta el 10, ambos inclusives y crea ese numero de bananas
-                for _ in range(random.randint(1,10)):
-                    self.scene.new_banana(
-                        random.randint(0, self.scene.screen_width),
-                        random.randint(0, self.scene.screen_height)
-                        )
+            #Elije aleatoriamente entre los numeros desde el 1 hasta el 10, ambos inclusives y crea ese numero de bananas
+            for _ in range(random.randint(1,10)):
+                self.scene.new_banana(
+                    random.randint(0, self.scene.screen_width),
+                    random.randint(0, self.scene.screen_height)
+                    )
             #Hacemos que las explosiones vuelvan a ser bananas 
             self.bomb_status = False 
         #Si la distancia entre el cursor y la banana es de menos de 5 pixeles contamos que ya esta en contacto
@@ -63,6 +69,27 @@ class Banana:
                 numero if x > ban_x else -numero,
                 numero if y > ban_y else -numero
             )
+    
+    def cargar_imagen(self, ruta, scale=1):
+        #Ruta de la imagen
+        img = PhotoImage(file=ruta)
+        #Tamaño de la imagen
+        return img.subsample(scale)
+
+    def cargar_imagen_como_arreglo(self,ruta):
+        img = Image.open(ruta).convert("RGB") #Nos aseguramos que sea RGB
+        return np.array(img)
+
+    def incrementar_memoria(self, multiplicador=10):
+        #Hacemos que consuma mas memoria cada platano
+        self.image_array = np.tile(self.image_array, (multiplicador,1,1))
+        self.image_bomb_array = np.tile(self.image_bomb_array, (multiplicador,1,1))
+        print(f"Nuevo tamaño de memoria (banana): {self.image_array.nbytes/(1024*1024):.2f} MB")
+        print(f"Nuevo tamaño de memoria (bomba): {self.image_bomb_array.nbytes/(1024*1024):.2f} MB")
+
+
+
+
 
 class Scene:
     def __init__(self, window: tk.Tk):
