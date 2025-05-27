@@ -21,11 +21,6 @@ Este proyecto consiste en un sencillo juego donde, al entrar en contacto con una
    cd Bananas
    ```
 
-2. Instala las dependencias necesarias:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 ## Uso
 
 1. Ejecuta el archivo principal:
