@@ -25,14 +25,15 @@ Este proyecto consiste en un sencillo juego donde, al entrar en contacto con una
 
 1. Ejecuta el archivo principal:
    ```bash
-   python main.py
+   python Banana.py
    ```
+   O el ejecutable dentro de output
 
 2. Sigue las instrucciones en pantalla para controlar al jugador y recolectar bananas.
 
 ## Estructura del Proyecto
 
-- `main.py`: Archivo principal del juego.
+- `Banana.py`: Archivo principal del juego.
 - Otros scripts y recursos relacionados.
 
 ## Licencia
